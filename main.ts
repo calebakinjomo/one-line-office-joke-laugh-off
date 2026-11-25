@@ -2,6 +2,10 @@
 // make.fun competition u-suzy-one-line-office-joke-laugh-off-f574ac73
 // Writes exactly one line (<=200 chars) to /output/entry.txt
 //
+// Output contract: the file holds ENTRY plus a single trailing newline
+// and nothing else — 89 chars of joke plus one newline. The guard below
+// runs before any write, so a bad entry can never land in /output/entry.txt.
+//
 // The joke: an HR happiness survey with only one permitted answer.
 // Setup names a familiar office ritual; the punchline flips it — the
 // "survey" measures nothing, it mandates the answer. One read, no
@@ -15,8 +19,17 @@ const ENTRY =
   "HR sent a survey asking how happy we are, and the only multiple-choice answer was 'Very.'";
 
 // Self-check: the entry must be exactly one line and within the limit,
-// otherwise fail loudly instead of writing a bad entry.
-if (ENTRY.includes("\n") || ENTRY.length === 0 || ENTRY.length > MAX_CHARS) {
+// otherwise fail loudly instead of writing a bad entry. A carriage
+// return would split the line on some readers, and leading/trailing
+// whitespace would add invisible characters to the counted entry, so
+// both are rejected here alongside newlines and the length bounds.
+if (
+  ENTRY.includes("\n") ||
+  ENTRY.includes("\r") ||
+  ENTRY.trim() !== ENTRY ||
+  ENTRY.length === 0 ||
+  ENTRY.length > MAX_CHARS
+) {
   throw new Error(
     `Invalid entry: expected one line of 1-${MAX_CHARS} chars, got ${ENTRY.length} chars`,
   );
